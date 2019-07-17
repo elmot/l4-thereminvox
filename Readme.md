@@ -15,7 +15,7 @@ Here you may find a video where Leon [demonstrates his instrument](https://www.y
 
 This project is written in memory of Leon Theremin, almost 100 years after his invention.
 
-The project is digital implementation of a similar idea.
+The project is digital implementation of the same principle - contactless musical instrument.
 
 Palms positions are detected by two VL53L1X sensors and then converted into sound.
 
@@ -25,8 +25,8 @@ Hardware Components
 * [Nucleo64-L476RG MCU board](https://www.st.com/en/evaluation-tools/nucleo-l476rg.html)
 * [X-NUCLEO-53L1A1 sensor shield board](https://www.st.com/content/st_com/en/products/ecosystems/stm32-open-development-environment/stm32-nucleo-expansion-boards/stm32-ode-sense-hw/x-nucleo-53l1a1.html)
 * Minijack 3.5mm plug and cable
-* Any speaker with linear input
-* Some cables
+* Speaker with linear input
+* Some wires
 * USB power supply
 
 Software used
