@@ -127,15 +127,23 @@ void setupSensor(VL53L1_DEV dev) {
     if (status) Error_Handler();
 }
 
+#define MIN_DISTANCE 70
+#define DISTANCE_RANGE 320
+#define MAX_VOLUME 1000
+#define MIN_FREQ 20
+#define MAX_FREQ 1200
+
 static uint32_t phase64K = 0;
 static volatile uint32_t phase64KDelta = 0x20000;
 
 __unused void TIM8_IRQHandler(void) {
     __HAL_TIM_CLEAR_IT(&htim8, TIM_IT_UPDATE);
     phase64K = (phase64K + phase64KDelta) % (1000 * 0x10000);
-    int value = 2048 + (SIN_WAVE[phase64K / 0x10000] * volume / 1000);
+    int value = 2048 + (AUDIO_SAMPLE[phase64K / 0x10000] * volume / MAX_VOLUME);
     DAC1->DHR12L2 = value;
 }
+
+
 
 /* USER CODE END 0 */
 
@@ -203,35 +211,38 @@ int main(void) {
 
         /* USER CODE BEGIN 3 */
         VL53L1_RangingMeasurementData_t data;
-        uint32_t t = HAL_GetTick();
-        status += VL53L1_WaitMeasurementDataReady(&leftSensor);
-        status += VL53L1_GetRangingMeasurementData(&leftSensor, &data);
-        VL53L1_ClearInterruptAndStartMeasurement(&leftSensor);
+
+        status += VL53L1_WaitMeasurementDataReady(&centerSensor);
+        status += VL53L1_GetRangingMeasurementData(&centerSensor, &data);
+        VL53L1_ClearInterruptAndStartMeasurement(&centerSensor);
         if (data.RangeStatus == 0) {
-            volume = (data.RangeMilliMeter - 50) * 3;
-            if (volume > 1000) volume = 1000;
+            int d = (data.RangeMilliMeter - MIN_DISTANCE);
+            volume = d * d * MAX_VOLUME /
+                     (DISTANCE_RANGE * DISTANCE_RANGE);
+            if (volume > MAX_VOLUME) volume = MAX_VOLUME;
             else if (volume < 0) volume = 0;
         } else {
             volume = 0;
         }
 
-//        printf("1:%u, %u, %d, \n", data.RangeStatus, data.RangeMilliMeter, volume);
-
-        status += VL53L1_WaitMeasurementDataReady(&centerSensor);
-        status += VL53L1_GetRangingMeasurementData(&centerSensor, &data);
-        VL53L1_ClearInterruptAndStartMeasurement(&centerSensor);
+        double freq;
+        status += VL53L1_WaitMeasurementDataReady(&leftSensor);
+        status += VL53L1_GetRangingMeasurementData(&leftSensor, &data);
+        VL53L1_ClearInterruptAndStartMeasurement(&leftSensor);
         if (data.RangeStatus != 0) {
             volume = 0;
+            freq = 0;
         } else {
-            int freq = (data.RangeMilliMeter - 50) * 10;
-            if (freq < 40) {
-                phase64KDelta = 0;
-            } else {
-                phase64KDelta = (0x10000 / 48 * freq);
+            int d = (data.RangeMilliMeter - MIN_DISTANCE);
+            freq = MIN_FREQ + (double) d * d * (MAX_FREQ - MIN_FREQ) /
+                              (DISTANCE_RANGE * DISTANCE_RANGE);
+            if (freq > MAX_FREQ) {
+                freq = MAX_FREQ;//NOLINT
+            } else if (freq < 20) {
+                volume = 0;
             }
+            phase64KDelta = (65536.0 / 48 * freq);
         }
-//        printf("2:%u, %u, %lu, %lu, %u\n", data.RangeStatus, data.RangeMilliMeter, data.SignalRateRtnMegaCps,
-//               data.AmbientRateRtnMegaCps, data.EffectiveSpadRtnCount);
         if (status) Error_Handler();
     }
 #pragma clang diagnostic pop

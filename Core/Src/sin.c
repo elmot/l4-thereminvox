@@ -2,7 +2,8 @@
 // Created by Ilia.Motornyi on 16/07/2019.
 //
 #include <main.h>
-const int16_t SIN_WAVE[1000] = {
+const int16_t AUDIO_SAMPLE [1000] = {
+        //=ROUND(SIN(PI()*I/500)*2000)
         0,
         13,
         25,

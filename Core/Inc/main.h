@@ -72,7 +72,7 @@ void Error_Handler(void);
 int XNUCLEO53L1A1_Init(void);
 
 int XNUCLEO53L1A1_ResetId(int DevNo, int state);
-extern const int16_t SIN_WAVE[1000];
+extern const int16_t AUDIO_SAMPLE[1000];
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
