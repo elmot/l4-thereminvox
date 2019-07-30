@@ -2,7 +2,7 @@ Digital Thereminvox
 ====
 
 [Thereminvox(aka theremin,  ætherphone/etherphone, thereminophone 
-or termenvox)]() is an pure electronic musical instrument, which 
+or termenvox)]() is a pure electronic musical instrument, which 
 does not have nor strings, neither buttons. It reacts on *thereminist* hands
 positions.  
 
@@ -15,7 +15,7 @@ Here you may find a video where Leon [demonstrates his instrument](https://www.y
 
 This project is written in memory of Leon Theremin, almost 100 years after his invention.
 
-The project is digital implementation of the same principle - contactless musical instrument.
+The project is a digital implementation of the same principle - contactless musical instrument.
 
 Palms positions are detected by two VL53L1X sensors and then converted into sound.
 
